@@ -9,16 +9,21 @@ public class GameManager : MonoBehaviour
     public GameObject dude;
     int[] marks = new int[] {3,5,5,2,1,2,3,4,5,3,1};
     int currPlatform = 0;
+    GameObject[] rHand;
+    GameObject[] lHand;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        rHand = GameObject.FindGameObjectsWithTag("Right");
+        lHand = GameObject.FindGameObjectsWithTag("Left");
     }
 
     // Update is called once per frame
     void Update()
     {
+
+
         moveDown(hands);
 
         for(int i = 0; i < platforms.Length; i++)
@@ -39,6 +44,16 @@ public class GameManager : MonoBehaviour
                 currPlatform++;
             }
         }
+        if(rHand.Length == 0)
+        {
+            rHand = GameObject.FindGameObjectsWithTag("Right");
+            lHand = GameObject.FindGameObjectsWithTag("Left");
+        }
+        else
+        {
+            Debug.Log(rHand[0].transform.position.x);
+        }
+        
     }
 
     private void moveDown(GameObject go)
