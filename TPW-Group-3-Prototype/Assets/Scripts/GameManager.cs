@@ -4,10 +4,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject[] platforms;
-    public GameObject hands;
+    public GameObject platObj;
+    public List<GameObject> platforms;
+    public List<GameObject> numberplatforms;
     public GameObject dude;
-    int[] marks = new int[] {3,5,5,2,1,2,3,4,5,3,1};
+    int[] canthelp = new int[] {1,5,1,0,4,3,2,0,6,7,1,2,3,2,1};
+    float[] xNotes = new float[8];
+    public GameObject[] numbers = new GameObject[8];
     int currPlatform = 0;
     GameObject[] rHand;
     GameObject[] lHand;
@@ -15,6 +18,22 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        //int counterdebug = 0;
+        platforms = new List<GameObject>();
+        for (int i = 0; i < 8; i++) {
+            xNotes[i] = -4.75f + (1.5f * i);
+        }
+        for(int j = 0; j < canthelp.Length; j++)
+        {
+            if(canthelp[j] > 0)
+            {
+                platforms.Add(Instantiate(platObj, new Vector3(xNotes[canthelp[j]], 8 + (2.1f * j), 0), Quaternion.identity));
+                numberplatforms.Add(Instantiate(numbers[canthelp[j]], new Vector3(-5.0f, 8 + (2.1f * j), 0), Quaternion.identity));
+            }
+            
+            //Debug.Log(counterdebug);
+            //counterdebug++;
+        }
         rHand = GameObject.FindGameObjectsWithTag("Right");
         lHand = GameObject.FindGameObjectsWithTag("Left");
     }
@@ -24,14 +43,17 @@ public class GameManager : MonoBehaviour
     {
 
 
-        moveDown(hands);
-
-        for(int i = 0; i < platforms.Length; i++)
+        for (int i = 0; i < platforms.Count; i++)
         {
             moveDown(platforms[i]);
         }
-        
-        if(dude.transform.position.y > -4.4)
+
+        for (int i = 0; i < numberplatforms.Count; i++)
+        {
+            moveDown(numberplatforms[i]);
+        }
+
+        if (dude.transform.position.y > -4.4)
         {
             moveDown(dude);
         }
@@ -44,15 +66,15 @@ public class GameManager : MonoBehaviour
                 currPlatform++;
             }
         }
-        if(rHand.Length == 0)
-        {
-            rHand = GameObject.FindGameObjectsWithTag("Right");
-            lHand = GameObject.FindGameObjectsWithTag("Left");
-        }
-        else
-        {
-            Debug.Log(rHand[0].transform.position.x);
-        }
+       // if(rHand.Length == 0)
+        //{
+          //  rHand = GameObject.FindGameObjectsWithTag("Right");
+            //lHand = GameObject.FindGameObjectsWithTag("Left");
+        //}
+        //else
+        //{
+          //  Debug.Log(rHand[0].transform.position.x);
+        //}
         
     }
 
