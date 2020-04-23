@@ -46,7 +46,13 @@ ScriptsOnlyBuild:
       Script: {instanceID: 0}
     - Class: 81
       Script: {instanceID: 0}
+    - Class: 82
+      Script: {instanceID: 0}
+    - Class: 83
+      Script: {instanceID: 0}
     - Class: 89
+      Script: {instanceID: 0}
+    - Class: 102
       Script: {instanceID: 0}
     - Class: 104
       Script: {instanceID: 0}
@@ -71,6 +77,8 @@ ScriptsOnlyBuild:
     - Class: 115
       Script: {instanceID: 0}
     - Class: 124
+      Script: {instanceID: 0}
+    - Class: 128
       Script: {instanceID: 0}
     - Class: 136
       Script: {instanceID: 0}
@@ -513,7 +521,7 @@ ScriptsOnlyBuild:
     className: RawImage
   - hash:
       serializedVersion: 2
-      Hash: 89e0d73252ee1f6e112f99333ec35607
+      Hash: ccbbe6b7600ca545223510db6695c875
     assemblyName: Assembly-CSharp.dll
     namespaceName: 
     className: GameManager
@@ -796,4 +804,4 @@ ScriptsOnlyBuild:
   platform: 5
   scenePathNames:
   - Assets/Scenes/TPW Game.unity
-  playerPath: C:/Users/bradm/Documents/TPW-Group-3-Game/Prototype Build/TPW-Group-3-Prototype.exe
+  playerPath: C:/Users/bradm/Documents/TPW-Group-3-Game/Build 4-23/TPW-Group-3-Prototype.exe
