@@ -2,98 +2,143 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.IO.Ports;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject platObj;
+    public GameObject platObjMaj;
+    public GameObject platObjMin;
+    GameObject marb;
     public List<GameObject> platforms;
-    public List<GameObject> numberplatforms;
-    public GameObject dude;
-    int[] canthelp = new int[] {1,5,1,0,4,3,2,0,6,7,1,2,3,2,1};
-    string[] canthelpWords = new string[] { "wise", "men", "say", "", "fools", "rush", "in", "", "I", "can't", "help", "falling", "love", "with", "you" };
+    List<int> randomNotes;
     float[] xNotes = new float[8];
-    public GameObject[] numbers = new GameObject[8];
     int currPlatform = 0;
-    GameObject[] rHand;
-    GameObject[] lHand;
+    public List<AudioSource> audioDataMajor;
+    public List<AudioSource> audioDataMinor;
+    bool isMajor;
+    string value = "0";
+    int intValue = 0;
+
+    int randomIndex = 0;
+
+    public float Timer = 2f;
+
+    SerialPort stream = new SerialPort("COM8", 9600);
 
     // Start is called before the first frame update
     void Start()
     {
+        stream.Open();
 
+        isMajor = true;
+
+        randomNotes = new List<int>();
+
+        for (int i = 0; i < 100; i++)
+        {
+            randomNotes.Add(Random.Range(0, 8));
+        }
 
         //int counterdebug = 0;
         platforms = new List<GameObject>();
         for (int i = 0; i < 8; i++) {
             xNotes[i] = -4.75f + (1.5f * i);
         }
-        for(int j = 0; j < canthelp.Length; j++)
-        {
-            if(canthelp[j] > 0)
-            {
-                GameObject word = Instantiate(platObj, new Vector3(xNotes[canthelp[j]], 8 + (2.0f * j), 0), Quaternion.identity);
-                word.transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = canthelpWords[j];
-                platforms.Add(word);
-
-                numberplatforms.Add(Instantiate(numbers[canthelp[j]], new Vector3(-5.0f, 8 + (2.0f * j), 0), Quaternion.identity));
-            }
-            
-            //Debug.Log(counterdebug);
-            //counterdebug++;
-        }
-        rHand = GameObject.FindGameObjectsWithTag("Right");
-        lHand = GameObject.FindGameObjectsWithTag("Left");
     }
 
     // Update is called once per frame
     void Update()
     {
 
-
         for (int i = 0; i < platforms.Count; i++)
         {
             moveDown(platforms[i]);
-        }
-
-        for (int i = 0; i < numberplatforms.Count; i++)
-        {
-            moveDown(numberplatforms[i]);
-        }
-
-        if (dude.transform.position.y > -4.4)
-        {
-            moveDown(dude);
-        }
-
-        if (Input.GetKeyDown("space"))
-        {
-            if(platforms[currPlatform].transform.position.y < -1.5)
-            {
-                dude.transform.position = new Vector3(platforms[currPlatform].transform.position.x, platforms[currPlatform].transform.position.y + 0.5f, platforms[currPlatform].transform.position.z);
-                platforms[currPlatform].transform.GetChild(0).gameObject.GetComponent<TextMesh>().text = "";
-                currPlatform++;
-            }
         }
 
         if (Input.GetKeyDown(KeyCode.R))
         {
             SceneManager.LoadScene("TPW Game");
         }
-       // if(rHand.Length == 0)
-        //{
-          //  rHand = GameObject.FindGameObjectsWithTag("Right");
-            //lHand = GameObject.FindGameObjectsWithTag("Left");
-        //}
-        //else
-        //{
-          //  Debug.Log(rHand[0].transform.position.x);
-        //}
-        
+
+        for (int i = 0; i < 100; i++)
+        {
+            
+            value = stream.ReadLine();
+            if(value == "M")
+            {
+                isMajor = !isMajor;
+            }
+            else
+            {
+                intValue = 0;
+                int.TryParse(value, out intValue);
+            }
+        }
+
+        Debug.Log("int=" + intValue);
+
+        Timer -= Time.deltaTime;
+        if (Timer <= 0f)
+        {
+            if (isMajor)
+            {
+                marb = Instantiate(platObjMaj, new Vector3(xNotes[randomNotes[randomIndex]], -1, 0), Quaternion.identity);
+            }
+            else
+            {
+                marb = Instantiate(platObjMin, new Vector3(xNotes[randomNotes[randomIndex]], -1, 0), Quaternion.identity);
+            }
+            platforms.Add(marb);
+            if (intValue == 0)
+            {
+                Timer = 2f;
+            }
+            else
+            {
+                Timer = 1.5f/(intValue*1.5f);
+                
+            }
+            
+            randomIndex++;
+            if(randomIndex > 99)
+            {
+                randomIndex = 0;
+            }
+            
+        }
+
     }
 
     private void moveDown(GameObject go)
     {
-        float translation = Time.deltaTime * 1.15f;
+        
+        float translation = (Time.deltaTime * 10.0f);
         go.transform.position = new Vector3(go.transform.position.x, go.transform.position.y - translation, go.transform.position.z);
+
+        if (go.transform.position.y < -5)
+        {
+            playNoteFor(go);
+            platforms.Remove(go);
+            Destroy(go);
+        }
+    }
+
+    private void playNoteFor(GameObject go)
+    {
+        for(int i = 0; i < xNotes.Length; i++)
+        {
+            if (go.transform.position.x == xNotes[i])
+            {
+                if (isMajor)
+                {
+                    audioDataMajor[i].Play(0);
+                }
+                else
+                {
+                    audioDataMinor[i].Play(0);
+                }
+                
+            }
+        }
     }
 }
